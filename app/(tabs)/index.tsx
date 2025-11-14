@@ -12,6 +12,7 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { Ionicons } from "@expo/vector-icons";
 import { toggleTodo } from '../../convex/todos';
 import { GenericId } from "convex/values";
+import EmptyState from "@/components/EmptyState";
 
 type Todo = Doc<"todos">
 
@@ -19,6 +20,8 @@ export default function Index() {
 
   const todos = useQuery(api.todos.getTodos)
   const toggleTodo = useMutation(api.todos.toggleTodo)
+  const deleteTodo = useMutation(api.todos.deleteTodo)
+  const editTodo = useMutation(api.todos.updateTodo)
 
   const { toggleDarkMode, colors } = useTheme()
   const homeStyles = createHomeStyles(colors)
@@ -38,7 +41,10 @@ export default function Index() {
     }
 
     const handleDeleteTodo= async(id: Id<"todos">) => {
-      throw new Error("Function not implemented.");
+      Alert.alert("Delete Todo", "Are you sure you want to delete this todo?", [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: () => deleteTodo({id}) }
+      ]);
     }
 
     const handleEditTodo = async(id: Id<"todos">) => {
@@ -114,7 +120,9 @@ export default function Index() {
           data={todos}
           renderItem={renderTodoItem}
           keyExtractor={(item) => item._id}
-          style={homeStyles.todoList}
+          style={homeStyles.todoList} 
+          ListEmptyComponent={<EmptyState />}
+          showsVerticalScrollIndicator={true}
         />
         
       </SafeAreaView>
